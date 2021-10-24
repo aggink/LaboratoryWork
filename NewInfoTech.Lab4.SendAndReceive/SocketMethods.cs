@@ -26,6 +26,21 @@ namespace NewInfoTech.Lab4.SendAndReceive
             return BitConverter.ToInt32(data, 0);
         }
 
+        //Отправка числа double
+        public static void SendDouble(Socket socket, double value)
+        {
+            byte[] data = BitConverter.GetBytes(value);
+            socket.Send(data);
+        }
+
+        //Получить число double
+        public static double ReceiveDouble(Socket socket)
+        {
+            byte[] data = new byte[sizeof(double)];
+            socket.Receive(data);
+            return BitConverter.ToDouble(data, 0);
+        }
+
         //Отправка string произвольной длины
         public static void SendString(Socket socket, string text)
         {
@@ -57,8 +72,55 @@ namespace NewInfoTech.Lab4.SendAndReceive
             return receivedString;
         }
 
+        //Отправка одномерного массива
+        public static void SendArrayInt(Socket socket, int[] array)
+        {
+            int N = array.Length;
+            byte[] data = new byte[array.Length * sizeof(int)];
+            Buffer.BlockCopy(array, 0, data, 0, data.Length);
+            SendInt(socket, N);
+            socket.Send(data);
+        }
+
+        //Получение одномерного массива
+        public static int[] ReceiveArrayInt(Socket socket)
+        {
+            int N = ReceiveInt(socket);
+            //Инициализация массива байтов
+            byte[] dataBytes = new byte[N * sizeof(int)];
+            socket.Receive(dataBytes);
+
+            int[] data = new int[N];
+            for (int i = 0; i < N; i++)
+            {
+                data[i] = BitConverter.ToInt32(dataBytes, i * 4);
+            }
+
+            return data;
+        }
+
+        public static void SendArrayString(Socket socket, string[] array)
+        {
+            SendInt(socket, array.Length);
+            for(int i = 0; i < array.Length; ++i)
+            {
+                SendString(socket, array[i]);
+            }
+        }
+
+        public static string[] ReceiveArrayString(Socket socket)
+        {
+            int N = ReceiveInt(socket);
+            string[] array = new string[N];
+            for(int i = 0; i < N; ++i)
+            {
+                array[i] = ReceiveString(socket);
+            }
+            return array;
+        }
+
         //Отправка двухмерного массива
-        public static void SendArray(Socket socket, int[,] array)
+        public static void SendArrayInt2(Socket socket, int[,] array)
         {
             //Число строк
             int N = array.GetLength(0);
@@ -89,7 +151,7 @@ namespace NewInfoTech.Lab4.SendAndReceive
         }
 
         //Получить двумерный массив
-        public static int[,] ReceiveArray(Socket socket)
+        public static int[,] ReceiveArrayInt2(Socket socket)
         {
             //Получаем размерость строки - число столбцов (итогового двумерного массива)
             int M = ReceiveInt(socket);
@@ -99,7 +161,7 @@ namespace NewInfoTech.Lab4.SendAndReceive
 
             //Инициализация массива байтов
             byte[] dataBytes = new byte[dataSizeBytes];
-            int bytesReaded = socket.Receive(dataBytes);
+            socket.Receive(dataBytes);
 
             //Определение размера массива int
             int dataSize = dataSizeBytes / sizeof(int);
