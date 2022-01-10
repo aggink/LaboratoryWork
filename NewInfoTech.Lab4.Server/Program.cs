@@ -347,40 +347,23 @@ namespace NewInfoTech.Lab4.Server
             }
             if(sum > mas.Length)
             {
-                int max = mas[0];
-                int imax = 0;
-                for (int i = 0; i < mas.Length; i++)
-                {
-                    if (mas[i] > max)
-                    {
-                        max = mas[i];
-                        imax = i;
-                        break;
-                    }
-                }
-                int max1 = max;
-                int imax1 = imax + 1;
-                for (int i = imax; i < mas.Length; i++)
-                {
-                    if (mas[i] > max)
-                    {
-                        max1 = mas[i];
-                        imax1 = i;
-                        break;
-                    }
-                }
-                int max2 = max1;
-                int imax2 = imax1 + 1;
-                for (int i = imax2; i < mas.Length; i++)
-                {
-                    if (mas[i] > max)
-                    {
-                        max2 = mas[i];
-                        break;
-                    }
-                }
+                int min = mas.Min();
 
-                var masMax = new int[] { max, max1, max2 };
+                int max_1 = mas.Max();
+                int pos = Array.IndexOf(mas, max_1);
+                mas[pos] = min;
+
+                int max_2 = mas.Max();
+                pos = Array.IndexOf(mas, max_2);
+                mas[pos] = min;
+
+                int max_3 = mas.Max();
+                pos = Array.IndexOf(mas, max_3);
+                mas[pos] = min;
+
+
+
+                var masMax = new int[] { max_1, max_2, max_3 };
                 SocketMethods.SendArrayInt(socket, masMax);
             }
             else
